@@ -10,22 +10,22 @@ var todoNextId = 1;
 app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
-res.send('Todo API Root');
+  res.send('Todo API Root');
 });
 
 app.get('/todos', function(req,res) {
-res.json(todos);
+  res.json(todos);
 });
 
 app.get('/todos/:id', function(req,res) {
-var todoId = +(req.params.id);
-var matchedTodo = _.findWhere(todos, {id: todoId});
+  var todoId = +(req.params.id);
+  var matchedTodo = _.findWhere(todos, {id: todoId});
 
-if (matchedTodo) {
-  res.json(matchedTodo);
-} else {
-  res.status(404).send();
-}
+  if (matchedTodo) {
+    res.json(matchedTodo);
+  } else {
+    res.status(404).send();
+  }
 });
 
 app.post('/todos', function(req,res) {
@@ -36,13 +36,27 @@ app.post('/todos', function(req,res) {
   }
 
   body.description = body.description.trim();
-  
+
   body.id = todoNextId++;
   
   todos.push(body);
 
   res.json(body);
 })
+
+app.delete('/todos/:id', function(req,res) {
+  var todoId = +(req.params.id);
+  var matchedTodo = _.findWhere(todos, {id: todoId});
+
+  if (!matchedTodo) {
+    res.status(404).json({error: "no todo found with that id"});
+  } else {
+    todos = _.without(todos, matchedTodo);
+    // todos.slice(todos.indexOf(matchedTodo), 1);
+    res.json(todos);
+  }
+
+}),
 
 app.listen(PORT, function() {
   console.log('Express listening on port ' + PORT + '!...');
